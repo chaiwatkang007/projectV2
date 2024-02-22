@@ -5,11 +5,13 @@ import {
   Model,
   PrimaryKey,
   Length,
+  AutoIncrement,
 } from "sequelize-typescript";
 
 @Table({ timestamps: false, tableName: "temperature", underscored: true })
 class Temp extends Model {
   @PrimaryKey
+  @AutoIncrement
   @Column(DataType.INTEGER)
   id: number;
   @Column({ type: DataType.TEXT })

@@ -72,6 +72,7 @@ export default function Login() {
         });
         Router.push(`/template`);
         localStorage.setItem("usernamelogin", username);
+        localStorage.setItem("role" ,result.data.result.role)
       }
     } catch (errorMessage: any) {
       if (axios.isAxiosError(errorMessage)) {

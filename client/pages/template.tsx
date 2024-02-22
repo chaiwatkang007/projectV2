@@ -3,7 +3,15 @@ import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts";
 import axios from "axios";
 import { Button, Card, Col, Progress, Row, Statistic } from "antd";
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import {
+  AppstoreFilled,
+  ArrowDownOutlined,
+  ArrowUpOutlined,
+  ControlFilled,
+  DatabaseFilled,
+  FireFilled,
+  TeamOutlined,
+} from "@ant-design/icons";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,6 +26,7 @@ interface LogEntry {
 
 function Admin() {
   const [usernamelogin, setUsernamelogin] = useState("");
+  const [usernamerole, setRoleusernamelogin] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState("2023-09-03"); // Default date
   const [selectedTime, setSelectedTime] = useState("00:00"); // Default time
@@ -30,6 +39,7 @@ function Admin() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [currentPage, setCurrentPage] = useState(1); // หน้าปัจจุบัน
   const [itemsPerPage] = useState(10); // จำนวนรายการต่อหน้า
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -57,79 +67,17 @@ function Admin() {
   const [recaptchaResponse, setRecaptchaResponse] = useState<string>("");
   const [isCaptchaVerified, setIsCaptchaVerified] = useState<boolean>(false);
 
-  const handleCaptchaVerify = (token: string | null) => {
-    setIsCaptchaVerified(true);
-    setRecaptchaResponse(token || "");
-  };
-
-  const verifyRecaptcha = async (recaptchaResponse: string) => {
-    const secretKey = "6Lcoi9onAAAAAJ_rNHdtMM7EGmubvFQC8slUHiTt";
-    const verificationUrl = "https://www.google.com/recaptcha/api/siteverify";
-    try {
-      const response = await axios.post(verificationUrl, null, {
-        params: {
-          secret: secretKey,
-          response: recaptchaResponse,
-        },
-      });
-
-      const responseData = response.data;
-      return responseData.success;
-    } catch (error) {
-      console.error("Error verifying reCAPTCHA:", error);
-      return false;
-    }
-  };
-
-  const _handleLogin = async () => {
-    try {
-      if (!username || !password) {
-        setErrorMessage("Please enter a username password ");
-        return;
-      }
-
-      if (!isCaptchaVerified) {
-        setErrorMessage("Please verify the ReCAPTCHA");
-        return;
-      }
-
-      const isRecaptchaValid = await verifyRecaptcha(recaptchaResponse);
-
-      const result = await axios({
-        method: "post",
-        maxBodyLength: Infinity,
-        url: "/api/user/adminlog",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: JSON.stringify({
-          username: username,
-          password: password,
-        }),
-      });
-      if (result.data.result.role === "admin") {
-        console.log("Login successful! as admin");
-        setIsLoggedIn(true);
-      }
-      if (result.data.result.role === "user") {
-        setErrorMessage("คุณไม่มีสิทธิ์เข้าถึง");
-        return;
-      }
-    } catch (errorMessage: any) {
-      if (axios.isAxiosError(errorMessage)) {
-        if (errorMessage.response) {
-          setErrorMessage("Invalid username or password");
-        }
-      }
-      console.log("err=========>", errorMessage);
-    }
-  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedUsername = localStorage.getItem("usernamelogin");
+      const storedUsernameRole = localStorage.getItem("role");
       if (storedUsername) {
         setUsernamelogin(storedUsername);
+      }
+
+      if (storedUsernameRole) {
+        setRoleusernamelogin(storedUsernameRole);
       }
     }
     // Fetch temperature and humidity data from the server when the date and time change
@@ -208,16 +156,13 @@ function Admin() {
     fetchDataUser();
   }, [selectedDate, selectedTime]);
 
-  const openSidebar = () => {
-    setSidebarOpen(true);
-  };
-
-  const closeSidebar = () => {
-    setSidebarOpen(false);
-  };
-
+  
   const selectMenu = (menu) => {
     setSelectedMenu(menu);
+  };
+
+  const Darkmode = () => {
+    setIsDarkMode(!isDarkMode);
   };
 
   const options = {
@@ -248,398 +193,160 @@ function Admin() {
   };
 
   return (
-    <div>
-      <header>
-        <title>Admin Dashboard</title>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
-          rel="stylesheet"
-        />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
-        />
-      </header>
-      <div className="grid-container">
-        {/* Header */}
-        <header className="header">
-          <div className="menu-icon" onClick={openSidebar}>
-            <span className="material-icons-outlined">menu</span>
+    <div className={`templatebg ${isDarkMode ? "dark-mode" : ""}`}>
+      <div className="secondbg">
+        <div className="menu">
+          <div className="icon" onClick={() => selectMenu("DASHBOARD")}>
+            <AppstoreFilled />
           </div>
-          <div className="header-left">
-            <span className="material-icons-outlined">search</span>
+          <div className="icon" onClick={() => selectMenu("TEAM")}>
+            <TeamOutlined />
           </div>
-          <div className="header-right">
-            {/* <span className="material-icons-outlined">account_circle</span> */}
-            {avatarUrl && (
-              <Image className="avatar-image" src={avatarUrl} alt="Avatar" width={40} height={25} />
-            )}
-            Wellcome {usernamelogin}
+          <div className="icon" onClick={() => selectMenu("CONTROL")}>
+            <ControlFilled />
           </div>
-        </header>
-        {/* End Header */}
+          <div className="icon" onClick={() => selectMenu("LOG")}>
+            <DatabaseFilled />
+          </div>
+          <div className="icon" onClick={Darkmode}>
+            <FireFilled />
+          </div>
+        </div>
+        <div className="Senior">
+          <h1>SENIOR PROJECT</h1>
+        </div>
+        <div className="wellcomelogin">
+          <h3 style={{ textTransform: "uppercase" }}>
+            WELCOME {usernamelogin}
+          </h3>
+        </div>
+        {selectedMenu === "DASHBOARD" && (
+          <div className="thirdbg">
+            <h3>
+              {selectedMenu}
+            </h3>
+          </div>
+        )}
 
-        {/* Sidebar */}
-        <aside id="sidebar" className={sidebarOpen ? "open" : ""}>
-          <div className="sidebar-title">
-            <div className="sidebar-brand">
-              <span className="material-icons-outlined"></span>
-              SENIOR PROJECT
+        {selectedMenu === "TEAM" && (
+          <div className="TEAM">
+            <Card
+              className="1 bounce-in-left"
+              hoverable
+              style={{ width: 300 }}
+              cover={
+                <Image
+                  alt="Professor Dr. Wisan Pathomchun"
+                  src="https://www.bu.ac.th/uploads/professors/20230105094052_1p23gZ0mf2LULxu_5OPxgLGfPvFusU5.jpg"
+                  width={300}
+                  height={300}
+                />
+              }
+            >
+              <Meta
+                title="ผศ.ดร.วิศาล พัฒน์ชู"
+                description="FACULTY ADVISORS"
+              />
+            </Card>
+            <Card
+              className="2 bounce-in-left"
+              hoverable
+              style={{ width: 300 }}
+              cover={
+                <Image
+                  alt="example"
+                  src={"/src/public/chaiwat.jpg"}
+                  width={300}
+                  height={300}
+                />
+              }
+            >
+              <Meta title="CHAIWAT COMERINTHRON" description="SOFTWARE" />
+            </Card>
+            <Card
+              className="3 bounce-in-left"
+              hoverable
+              style={{ width: 300 }}
+              cover={
+                <Image
+                  alt="example"
+                  src={"/src/public/lay.jpg"}
+                  width={300}
+                  height={300}
+                />
+              }
+            >
+              <Meta title="KANOKPORN HUDSREE" description="HARDWARE" />
+            </Card>
+            <Card
+              className="4 bounce-in-left"
+              hoverable
+              style={{ width: 300 }}
+              cover={
+                <Image
+                  alt="example"
+                  src={"/src/public/Mio.jpg"}
+                  width={300}
+                  height={300}
+                />
+              }
+            >
+              <Meta title="KASSARAPON CHAYANANT" description="HARDWARE" />
+            </Card>
+            <Card
+              className="5 bounce-in-left"
+              hoverable
+              style={{ width: 300 }}
+              cover={
+                <Image
+                  src="/src/public/mean.jpg"
+                  alt="example"
+                  width={300}
+                  height={300}
+                />
+              }
+            >
+              <Meta title="BENCHAPORN PHANMI" description="CLOUD" />
+            </Card>
+          </div>
+        )}
+
+        {selectedMenu === "CONTROL" && (
+          <div className="control-content">Content for CONTROL menu</div>
+        )}
+        {selectedMenu === "LOG" && usernamerole === "admin" && (
+          <div className="app-content">
+            <div className="admin-log-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>วัน</th>
+                    <th>เวลา</th>
+                    <th>เหตุการณ์</th>
+                  </tr>
+                </thead>
+                {currentItems.map((logEntry: LogEntry, index) => (
+                  <tr key={index}>
+                    <td>{logEntry.day}</td>
+                    <td>{logEntry.time}</td>
+                    <td>{logEntry.event_happening}</td>
+                  </tr>
+                ))}
+              </table>
+              <div className="pagination">
+                <ul className="page-numbers">{renderPageNumbers}</ul>
+              </div>
             </div>
-            <span className="material-icons-outlined" onClick={closeSidebar}>
-              close
-            </span>
           </div>
+        )}
 
-          <ul className="sidebar-list">
-            <li className="sidebar-list-item">
-              <span onClick={() => selectMenu("DASHBOARD")}>
-                <span className="material-icons-outlined">dashboard</span>{" "}
-                DASHBOARD
-              </span>
-            </li>
-
-            <li className="sidebar-list-item">
-              <span onClick={() => selectMenu("TEAM")}>
-                <span className="material-icons-outlined">groups</span> TEAM
-              </span>
-            </li>
-
-            <li className="sidebar-list-item">
-              <span onClick={() => selectMenu("CONTROL")}>
-                <span className="material-icons-outlined">settings</span>{" "}
-                CONTROL
-              </span>
-            </li>
-
-            <li className="sidebar-list-item">
-              <span onClick={() => selectMenu("ADMINLOG")}>
-                <span className="material-icons-outlined">construction</span>{" "}
-                ADMINLOG
-              </span>
-            </li>
-          </ul>
-        </aside>
-        {/* End Sidebar */}
-
-        {/* Main */}
-        <main className="main-container">
-          <div className="main-title">
-            <h2>{selectedMenu}</h2>
+        {selectedMenu === "LOG" && usernamerole !== "admin" && (
+          <div className="app-content">
+            <h3 style={{ textTransform: "uppercase" }}>You Don't have permission to view</h3>
           </div>
+        )}
 
-          {selectedMenu === "DASHBOARD" && (
-            <>
-              <div className="main-cards">
-                <div className="card">
-                  <div className="card-inner">
-                    <h2>USER</h2>
-                    <span className="material-icons-outlined">groups</span>
-                  </div>
-                  <h1>{countuser}</h1>
-                </div>
-
-                <div className="card">
-                  <div className="card-inner">
-                    <h2>ยาคงเหลือหลอดแรก</h2>
-                    <span className="material-icons-outlined">autorenew</span>
-                  </div>
-                  <div className="prog">
-                    <Progress type="circle" percent={30} size="small" />
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="card-inner">
-                    <h2>ยาคงเหลือหลอดสอง</h2>
-                    <span className="material-icons-outlined">autorenew</span>
-                  </div>
-                  <div className="prog">
-                    <Progress type="circle" percent={20} size="small" />
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="card-inner">
-                    <h2>ยาคงเหลือหลอดสาม</h2>
-                    <span className="material-icons-outlined">autorenew</span>
-                  </div>
-                  <div className="prog">
-                    <Progress type="circle" percent={25} size="small" />
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="card-inner">
-                    <h2>ยาคงเหลือหลอดสี่</h2>
-                    <span className="material-icons-outlined">autorenew</span>
-                  </div>
-                  <div className="prog">
-                    <Progress type="circle" percent={25} size="small" />
-                  </div>
-                </div>
-
-                {/* <div className="card">
-                  <Card bordered={false}>
-                    <Statistic
-                      title="Active"
-                      value={11.28}
-                      precision={2}
-                      valueStyle={{ color: "#3f8600" }}
-                      prefix={<ArrowUpOutlined />}
-                      suffix="%"
-                    />
-                  </Card>
-                </div>
-
-                <div className="card">
-                  <Card bordered={false}>
-                    <Statistic
-                      title="Idle"
-                      value={9.3}
-                      precision={2}
-                      valueStyle={{ color: "#cf1322" }}
-                      prefix={<ArrowDownOutlined />}
-                      suffix="%"
-                    />
-                  </Card>
-                </div> */}
-
-                {/* Add your main cards here */}
-              </div>
-
-              <div className="products">
-                {/* Add your product cards here */}
-
-                {/* <div className="product-card"> */}
-                {/* <h2 className="product-description">Temp & Humidity</h2> */}
-                {/* <div className="text-secondary"> */}
-                {/* <HighchartsReact
-                      highcharts={Highcharts}
-                      options={options}
-                    /> */}
-                {/* </div> */}
-                {/* </div> */}
-
-                <div className="social-media">
-                  <div className="product">
-                    {/* <div>
-                      <div className="product-icon background-red">
-                        <i className="bi bi-twitter"></i>
-                      </div>
-                      <h1 className="text-red">+274</h1>
-                      <p className="text-secondary">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      </p>
-                    </div> */}
-                    {/* <div>
-                      <div className="product-icon background-green">
-                        
-                      </div>
-                      <h1 className="text-green">{nameone}</h1>
-          
-                    </div>
-
-                    <div>
-                      <div className="product-icon background-green">
-                      </div>
-                      <h1 className="text-green">{nametwo}</h1>
-                      
-                    </div>
-
-                    <div>
-                      <div className="product-icon background-orange">
-                        
-                      </div>
-                      <h1 className="text-orange">{namethree}</h1>
-                      
-                    </div>
-
-                    <div>
-                      <div className="product-icon background-blue">
-                        
-                      </div>
-                      <h1 className="text-blue">{namefour}</h1>
-                     
-                    </div> */}
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {selectedMenu === "TEAM" && (
-            <>
-              <div className="team1">
-                <Card
-                  hoverable
-                  style={{ width: 300 }}
-                  cover={
-                    <Image
-                      alt="Professor Dr. Wisan Pathomchun"
-                      src="https://www.bu.ac.th/uploads/professors/20230105094052_1p23gZ0mf2LULxu_5OPxgLGfPvFusU5.jpg"
-                      width={300}
-                      height={300}
-                    />
-                  }
-                >
-                  <Meta
-                    title="ผศ.ดร.วิศาล พัฒน์ชู"
-                    description="FACULTY ADVISORS"
-                  />
-                </Card>
-              </div>
-              <div className="fixteam">
-                <div className="team-container">
-                  <Card
-                    hoverable
-                    style={{ width: 300 }}
-                    cover={
-                      <Image
-                        alt="example"
-                        src="https://scontent-bkk1-1.xx.fbcdn.net/v/t39.30808-6/323320300_831499997912863_7842745807329510235_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=efb6e6&_nc_ohc=rGQgrI42kVkAX8myzqL&_nc_ht=scontent-bkk1-1.xx&oh=00_AfBzn8wiHhFqQahscKgZA6GZ8Uuycjs4_XmIsBrzy1QHOw&oe=65AB9287"
-                        width={300}
-                        height={300}
-                      />
-                    }
-                  >
-                    <Meta title="CHAIWAT COMERINTHRON" description="SOFTWARE" />
-                  </Card>
-                  <Card
-                    hoverable
-                    style={{ width: 300 }}
-                    cover={
-                      <Image
-                        alt="example"
-                        src="https://scontent-bkk1-1.xx.fbcdn.net/v/t39.30808-6/337012394_233257582512653_7465760359736163477_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=efb6e6&_nc_ohc=AIBW8QH9iccAX8a6YkL&_nc_ht=scontent-bkk1-1.xx&oh=00_AfAZHAXHEEdTLQHhiz2ZZ16K31c6Fu9Lnmr6iVP8E1aJVA&oe=65AD08B7"
-                        width={300}
-                        height={300}
-                      />
-                    }
-                  >
-                    <Meta title="KANOKPORN HUDSREE" description="HARDWARE" />
-                  </Card>
-                  <Card
-                    hoverable
-                    style={{ width: 300 }}
-                    cover={
-                      <Image
-                        alt="example"
-                        src="https://scontent-bkk1-1.xx.fbcdn.net/v/t39.30808-6/371034662_1974338542924136_330610339788569331_n.jpg?stp=cp6_dst-jpg&_nc_cat=110&ccb=1-7&_nc_sid=efb6e6&_nc_ohc=1iN2Q8ZqQG8AX_hHb1c&_nc_ht=scontent-bkk1-1.xx&oh=00_AfBUxoo5yNrcwveoUeHBKkUgcNuFa1frfe_7rtQ14I-CdQ&oe=65ACAB4B"
-                        width={300}
-                        height={300}
-                      />
-                    }
-                  >
-                    <Meta title="KASSARAPON CHAYANANT" description="HARDWARE" />
-                  </Card>
-                  <Card
-                    hoverable
-                    style={{ width: 300 }}
-                    cover={
-                      <Image
-                        src="https://scontent-bkk1-1.xx.fbcdn.net/v/t39.30808-6/362951835_2042172992795649_5082259832039992477_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=efb6e6&_nc_ohc=8hNZEngh_18AX_Bs1E8&_nc_ht=scontent-bkk1-1.xx&oh=00_AfAiMdDH-5JG46uVpiF41lUKvZ9YRV_I4VWRZJlZiUqKrw&oe=65ACBCF1"
-                        alt="example"
-                        width={300}
-                        height={300}
-                      />
-                    }
-                  >
-                    <Meta title="BENCHAPORN PHANMI" description="CLOUD" />
-                  </Card>
-                </div>
-              </div>
-            </>
-          )}
-
-          {selectedMenu === "CONTROL" && <></>}
-
-          {selectedMenu === "ADMINLOG" && (
-            <>
-              {isLoggedIn ? null : (
-                <div className="beforelogin">
-                  <form>
-                    <div className="container">
-                      <label className="signin" htmlFor="signin">
-                        <b>
-                          <h1>SIGN IN</h1>
-                        </b>
-                      </label>
-                      <label htmlFor="uname">
-                        <b>Username</b>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter Username"
-                        name="uname"
-                        required
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                      />
-                      <label htmlFor="psw">
-                        <b>Password</b>
-                      </label>
-                      <input
-                        type="password"
-                        placeholder="Enter Password"
-                        name="psw"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                      <Col className="b">
-                        <Link href="/forgorpassword">forgot password</Link>
-                      </Col>
-                      <div className="cc">
-                        <ReCAPTCHA
-                          sitekey="6Lcoi9onAAAAAMeXsjmOo05DRzAg1g3yuJqx9yqS"
-                          onChange={handleCaptchaVerify}
-                        />
-                      </div>
-                      <Button
-                        className="buttonlogin"
-                        type="primary"
-                        onClick={_handleLogin}
-                      >
-                        Login
-                      </Button>
-                    </div>
-                    <p>{errorMessage}</p>
-                  </form>
-                </div>
-              )}
-
-              {datalog.length > 0 && isLoggedIn && (
-                <div className="admin-log-table">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Day</th>
-                        <th>Time</th>
-                        <th>Event</th>
-                      </tr>
-                    </thead>
-                    {currentItems.map((logEntry: LogEntry, index) => (
-                      <tr key={index}>
-                        <td>{logEntry.day}</td>
-                        <td>{logEntry.time}</td>
-                        <td>{logEntry.event_happening}</td>
-                      </tr>
-                    ))}
-                  </table>
-                  <div className="pagination">
-                    <ul className="page-numbers">{renderPageNumbers}</ul>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </main>
-        {/* End Main */}
+        {selectedMenu === "DARKMODE" && <div className="dark-mode"></div>}
       </div>
     </div>
   );

@@ -1,8 +1,7 @@
-import Users from "../model/users.model";
 import { IQuerys } from "../interface/common.interface";
-import { Op } from "sequelize";
 import Temp from "../model/temp.model";
 import { CreateTemp, Daytemps, UpdateTemp } from "../interface/temp.interface";
+import moment from "moment";
 
 const genQuery = (args: IQuerys) => {
   let body: any = {};
@@ -25,13 +24,15 @@ const tempController = {
     });
   },
   create: async (args: CreateTemp) => {
-    let user = await Temp.findOne({ where: { temp: args?.temp } });
-    if (user) throw Error("ผู้ใช้งานนี้มีอยู่ในระบบอยู่แล้ว");
-
-    let newUser = await Temp.create({
-      ...args,
+    const currenttime = new Date();
+    let newData = await Temp.create({
+      id: null,
+      day: currenttime.toISOString().slice(0,10),
+      time: moment(currenttime).utcOffset(7).format("HH:mm"),
+      temp: args.temp,
+      humidity: args.humidity
     });
-    return newUser;
+    return newData;
   },
   update: async (args: UpdateTemp) => {
     let user = await Temp.findOne({ where: { day: args.day } });
