@@ -81,28 +81,6 @@ function Admin() {
       }
     }
     // Fetch temperature and humidity data from the server when the date and time change
-    const fetchData = async () => {
-      try {
-        const response = await axios.post("/api/temp/daytemp", {
-          day: selectedDate,
-          // time: selectedTime,
-        });
-        const data = response.data;
-
-        // Extract temperature and humidity from the response
-        const temperature = data.result.map((entry) => entry.temp);
-        const humidity = data.result.map((entry) => entry.humidity);
-        const timeData = data.result.map((entry) => entry.time);
-
-        setTemperature(temperature);
-        setHumidity(humidity);
-        setXAxisCategories(timeData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
     const fetchLog = async () => {
       try {
         const response = await axios.get("/api/log");
@@ -342,7 +320,7 @@ function Admin() {
 
         {selectedMenu === "LOG" && usernamerole !== "admin" && (
           <div className="app-content">
-            <h3 style={{ textTransform: "uppercase" }}>You Don't have permission to view</h3>
+            <h3>YOU DON'T HAVE PERMISSION TO VIEW</h3>
           </div>
         )}
 
