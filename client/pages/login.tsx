@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Button, Col, Input, Row  } from "antd";
+import { Alert, Button, Col, Input, Row } from "antd";
 import axios from "axios";
 import Router from "next/router";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
+import Marquee from "react-fast-marquee";
 
 export default function Login() {
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -72,7 +73,8 @@ export default function Login() {
         });
         Router.push(`/template`);
         localStorage.setItem("usernamelogin", username);
-        localStorage.setItem("role" ,result.data.result.role)
+        localStorage.setItem("role", result.data.result.role);
+        localStorage.setItem("uuiduser", result.data.result.id);
       }
     } catch (errorMessage: any) {
       if (axios.isAxiosError(errorMessage)) {
@@ -147,7 +149,11 @@ export default function Login() {
               Login
             </Button>
           </div>
-          <p>{errorMessage}</p>
+          <p>
+            {errorMessage && (
+              <Alert message={errorMessage} type="info" showIcon />
+            )}
+          </p>
         </form>
       </div>
     </main>

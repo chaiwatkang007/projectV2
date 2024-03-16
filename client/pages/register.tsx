@@ -10,12 +10,20 @@ export default function Register() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
- 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[hotmail|gmail]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
 
   const _handleRegister = async () => {
     try {
       if (!username || !password || !email) {
         setErrorMessage("Please enter a email username and password");
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        setErrorMessage("Email must end with @hotmail.com or @gmail.com");
         return;
       }
 
