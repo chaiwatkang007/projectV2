@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "antd";
+import { Alert, Button } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 
@@ -12,6 +12,11 @@ export default function Resetpassowrd() {
   const [newpassword, setNewPassword] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  const passwordStrong = (password) => {
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return strongRegex.test(password);
+  }
+
   const _handleReset = async () => {
   try {
     if (!newpassword || !password ) {
@@ -21,6 +26,11 @@ export default function Resetpassowrd() {
 
     if(newpassword !== password) {
       setErrorMessage("New password and confirm password don't match");
+      return;
+    }
+
+    if (!passwordStrong(password)) {
+      setErrorMessage("Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long.")
       return;
     }
 
@@ -107,7 +117,9 @@ export default function Resetpassowrd() {
               RESET PASSWORD
             </Button>
           </div>
-          <p>{errorMessage}</p>
+          <p>{errorMessage && (
+              <Alert message={errorMessage} type="info" showIcon />
+            )}</p>
         </form>
       </div>
     </main>

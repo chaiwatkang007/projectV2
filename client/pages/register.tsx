@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, message} from "antd";
+import { Alert, Button, message} from "antd";
 import axios from "axios";
 import Router from "next/router";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -10,9 +10,17 @@ export default function Register() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  const currenttime = new Date();
+
+
   const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[hotmail|gmail]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@(hotmail|gmail)\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  const passwordStrong = (password) => {
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return strongRegex.test(password);
   }
 
   const _handleRegister = async () => {
@@ -27,6 +35,11 @@ export default function Register() {
         return;
       }
 
+      if (!passwordStrong(password)) {
+        setErrorMessage("Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long.")
+        return;
+      }
+
       const result = await axios({
         method: "post",
         maxBodyLength: Infinity,
@@ -38,6 +51,7 @@ export default function Register() {
           "email": email,
           "username": username,
           "password": password,
+          "createdDay": currenttime.toISOString().slice(0,10),
           "role": "user",
         }),
       });
@@ -110,7 +124,9 @@ export default function Register() {
               SIGN UP
             </Button>
           </div>
-          <p>{errorMessage}</p>
+          <p>{errorMessage && (
+              <Alert message={errorMessage} type="info" showIcon />
+            )}</p>
         </form>
       </div>
     </main>

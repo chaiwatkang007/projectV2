@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, message } from "antd";
+import { Alert, Button, message } from "antd";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
 import Router from "next/router";
@@ -136,7 +136,9 @@ export default function Forgotpassword() {
               SEND ME
             </Button>
           </div>
-          <p>{errorMessage}</p>
+          <p>{errorMessage && (
+              <Alert message={errorMessage} type="info" showIcon />
+            )}</p>
         </form>
       </div>
     </main>

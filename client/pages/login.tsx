@@ -133,7 +133,7 @@ export default function Login() {
               }
             />
             <Col className="b">
-              <Link href="/forgotpassword">forgot password</Link>
+              <Link href="/forgotpassword">Forgot password?</Link>
             </Col>
             <div className="cc">
               <ReCAPTCHA

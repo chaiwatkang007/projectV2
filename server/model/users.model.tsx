@@ -24,6 +24,8 @@ class Users extends Model {
   email: string;
   @Column({ type: DataType.TEXT })
   verify: string;
+  @Column({ type: DataType.TEXT })
+  createdDay: string;
 }
 
 export default Users;

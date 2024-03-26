@@ -12,7 +12,9 @@ import {
 } from "@ant-design/icons";
 import Image from "next/image";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import Marquee from 'react-fast-marquee';
+import Marquee from "react-fast-marquee";
+
+import ApexCharts from "react-apexcharts";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -97,7 +99,6 @@ function Admin() {
   const [isClientFormVisible, setClientFormVisible] = useState(false);
 
   const [loading, setLoading] = useState(true);
-  
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -474,8 +475,8 @@ function Admin() {
                   <Alert
                     message={
                       <Marquee pauseOnHover gradient={false}>
-                         Wellcome to senior project computer and robotic of fourth year 
-                        engineering from Bangkok university.
+                        Wellcome to senior project computer and robotic of
+                        fourth year engineering from Bangkok university.
                       </Marquee>
                     }
                   />
@@ -855,6 +856,7 @@ function Admin() {
                     <th>เหตุการณ์</th>
                   </tr>
                 </thead>
+                <tbody>
                 {currentItems.map((logEntry: LogEntry, index) => (
                   <tr key={index}>
                     <td>{logEntry.day}</td>
@@ -862,6 +864,7 @@ function Admin() {
                     <td>{logEntry.event_happening}</td>
                   </tr>
                 ))}
+                </tbody>
               </table>
               <div className="pagination">
                 <ul className="page-numbers">{renderPageNumbers}</ul>

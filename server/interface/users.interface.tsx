@@ -3,6 +3,7 @@ export interface CreateUser {
   password: string;
   role: string;
   email: string;
+  createdDay: string;
 }
 
 export interface UpdateUser {
