@@ -15,6 +15,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Marquee from "react-fast-marquee";
 
 import ApexCharts from "react-apexcharts";
+import Link from "next/link";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -314,6 +315,11 @@ function Admin() {
 
   const handleSubmit = async () => {
     try {
+
+      if (!userId || !clientName || !conginitaldisease || !medicine || !age || !gender || doses.length === 0) {
+        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+        return;
+      }
       const result = await axios({
         method: "post",
         maxBodyLength: Infinity,
@@ -360,6 +366,10 @@ function Admin() {
 
   const handleSubmitPill = async () => {
     try {
+      if (!MedicineName || !numberMedicine || !chooseoption) {
+        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+        return;
+      }
       const result = await axios({
         method: "post",
         maxBodyLength: Infinity,
@@ -548,6 +558,11 @@ function Admin() {
             <div className="chart">
               <HighchartsReact highcharts={Highcharts} options={options} />
             </div>
+            <Col className="ll">
+              <Link href="https://drive.google.com/file/d/1J3JNopuhXjp3YTSrGxA8Yc0922yym_uu/view?usp=drivesdk">
+                Infomation Help?
+              </Link>
+            </Col>
           </div>
         )}
 
@@ -769,6 +784,7 @@ function Admin() {
                       <input
                         type="text"
                         placeholder="Enter Age"
+                        required
                         name="age"
                         value={age}
                         onInput={(e) => {
@@ -857,13 +873,13 @@ function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                {currentItems.map((logEntry: LogEntry, index) => (
-                  <tr key={index}>
-                    <td>{logEntry.day}</td>
-                    <td>{logEntry.time}</td>
-                    <td>{logEntry.event_happening}</td>
-                  </tr>
-                ))}
+                  {currentItems.map((logEntry: LogEntry, index) => (
+                    <tr key={index}>
+                      <td>{logEntry.day}</td>
+                      <td>{logEntry.time}</td>
+                      <td>{logEntry.event_happening}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
               <div className="pagination">

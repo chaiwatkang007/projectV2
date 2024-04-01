@@ -468,6 +468,7 @@ table.clienttable {
   background-color: #EEEEEE;
   text-align: center;
   border-collapse: collapse;
+  height: 100%;
 }
 table.clienttable td, table.clienttable th {
   border: 1px solid #AAAAAA;
@@ -634,4 +635,12 @@ table.clienttable thead th {
   margin-bottom: 8px;
 }
 
+.err{
+  margin-top: 3%;
+}
 
+.ll{
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}

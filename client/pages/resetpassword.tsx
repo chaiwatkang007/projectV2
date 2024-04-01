@@ -117,9 +117,11 @@ export default function Resetpassowrd() {
               RESET PASSWORD
             </Button>
           </div>
-          <p>{errorMessage && (
-              <Alert message={errorMessage} type="info" showIcon />
-            )}</p>
+          <div className="err">
+          {errorMessage && (
+            <Alert message={errorMessage} type="error" showIcon />
+          )}
+          </div>
         </form>
       </div>
     </main>
