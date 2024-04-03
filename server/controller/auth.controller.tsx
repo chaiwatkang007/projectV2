@@ -1,4 +1,3 @@
-import { ISignIn } from "../interface/auth.interface";
 import { setUp } from "../auth/passport/local";
 import Users from "../model/users.model";
 import passport from "passport"

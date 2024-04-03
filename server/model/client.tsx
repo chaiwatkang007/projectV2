@@ -45,6 +45,19 @@ class Clients extends Model {
   @Column({ type: DataType.TEXT })
   T4: string;
 
+  @Column({ type: DataType.TEXT })
+  CT1: string;
+
+  @Column({ type: DataType.TEXT })
+  CT2: string;
+
+  @Column({ type: DataType.TEXT })
+  CT3: string;
+
+  @Column({ type: DataType.TEXT })
+  CT4: string;
+
+
 }
 
 export default Clients;

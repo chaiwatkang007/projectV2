@@ -13,9 +13,8 @@ import {
 import Image from "next/image";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Marquee from "react-fast-marquee";
-
-import ApexCharts from "react-apexcharts";
 import Link from "next/link";
+import Swal from "sweetalert2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -39,7 +38,6 @@ interface Clientaa {
   T3: string;
   T4: string;
 }
-
 interface ChartDataState {
   labels: any;
   datasets: {
@@ -84,23 +82,18 @@ function Admin() {
   const [userId, setUserId] = useState<string>("");
   const [age, setAge] = useState<string>("");
   const [gender, setGender] = useState<string | undefined>(undefined);
-  const [time, setTime] = useState<string | undefined>(undefined);
-  const [pillName, setPillName] = useState("");
   const [medicine, setMedicine] = useState<string>("");
   const [conginitaldisease, setConginitaldisease] = useState<string>("");
   const [doses, setDoses] = useState<string[]>([]);
   const [chooseoption, setChoose] = useState<string[]>([]);
   const [selectedCount, setSelectedCount] = useState(0);
   const [selectedOption, setSelectedOption] = useState(0);
-
   // Medicine
   const [MedicineName, setMedicineName] = useState<string>("");
   const [numberMedicine, setNumberMedicine] = useState<number>();
   const [isMedicineFormVisible, setMedicineFormVisible] = useState(false);
   const [isClientFormVisible, setClientFormVisible] = useState(false);
-
   const [loading, setLoading] = useState(true);
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = datalog.slice(indexOfFirstItem, indexOfLastItem);
@@ -236,7 +229,6 @@ function Admin() {
                 };
               }
             });
-
             setClient(countclientadmin);
           }
 
@@ -274,6 +266,39 @@ function Admin() {
     };
     fetchDataClients();
     setUserId(usernamelogin);
+
+    const Reset = async () => {
+      try {
+        const response = await axios.get("/api/client/");
+        const datacl = response.data;
+        console.log(datacl.result.rows);
+
+        datacl.result.rows.forEach((row) => {
+          row.T1 = row.CT1;
+          row.T2 = row.CT2;
+          row.T3 = row.CT3;
+          row.T4 = row.CT4;
+        });
+
+        const result = await axios.post(
+          "/api/client/autoreset",
+          datacl.result.rows
+        );
+      } catch (error) {
+        console.error("Error to Resetting", error);
+      }
+    };
+
+    const midnightReset = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinite = now.getMinutes();
+
+      if (currentHour === 0 && currentMinite === 0) {
+        Reset();
+      }
+    };
+    setInterval(midnightReset, 60000);
   }, [usernamerole, usernamelogin, uuiduser]);
 
   const selectMenu = (menu) => {
@@ -313,11 +338,34 @@ function Admin() {
     ],
   };
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+
   const handleSubmit = async () => {
     try {
-
-      if (!userId || !clientName || !conginitaldisease || !medicine || !age || !gender || doses.length === 0) {
-        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+      if (
+        !userId ||
+        !clientName ||
+        !conginitaldisease ||
+        !medicine ||
+        !age ||
+        !gender ||
+        doses.length === 0
+      ) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "กรุณากรอกข้อมูลให้ครบทุกช่อง",
+        });
         return;
       }
       const result = await axios({
@@ -345,7 +393,11 @@ function Admin() {
         event_happening: `${userId} added client ${clientName}`,
       });
 
-      alert("ADD CLIENT NAME SUCESS");
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "ADD CLIENT NAME SUCESS",
+      });
 
       setClientName("");
       setConginitaldisease("");
@@ -367,7 +419,11 @@ function Admin() {
   const handleSubmitPill = async () => {
     try {
       if (!MedicineName || !numberMedicine || !chooseoption) {
-        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "กรุณากรอกข้อมูลให้ครบทุกช่อง",
+        });
         return;
       }
       const result = await axios({
@@ -387,7 +443,11 @@ function Admin() {
         event_happening: `${usernamelogin} added ${MedicineName} : ${numberMedicine} pills`,
       });
 
-      alert("ADD MEDECINE NAME SUCESS");
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "ADD MEDECINE NAME SUCESS",
+      });
     } catch (error) {
       console.error("Error: ", error);
 
@@ -829,9 +889,9 @@ function Admin() {
                         <Checkbox value="04:00">04:00</Checkbox>
                         <Checkbox value="05:00">05:00</Checkbox>
                         <Checkbox value="06:00">06:00</Checkbox>
-                        <Checkbox value="7:00">7:00</Checkbox>
-                        <Checkbox value="8:00">8:00</Checkbox>
-                        <Checkbox value="9:00">9:00</Checkbox>
+                        <Checkbox value="07:00">07:00</Checkbox>
+                        <Checkbox value="08:00">08:00</Checkbox>
+                        <Checkbox value="09:00">09:00</Checkbox>
                         <Checkbox value="10:00">10:00</Checkbox>
                         <Checkbox value="11:00">11:00</Checkbox>
                         <Checkbox value="12:00">12:00</Checkbox>

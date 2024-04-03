@@ -30,6 +30,22 @@ clientRoute
       res.status(400).json({ message: err?.message });
   }
   })
+  .post("/eating", async (req: Request, res: Response) => {
+    try {
+      const result = await clientController.eating(req?.body);
+      res.status(200).json({ result });
+  } catch (err: any) {
+      res.status(400).json({ message: err?.message });
+  }
+  })
+  .post("/autoreset", async (req: Request, res: Response) => {
+    try {
+      const result = await clientController.autoreset(req?.body);
+      res.status(200).json({ result });
+  } catch (err: any) {
+      res.status(400).json({ message: err?.message });
+  }
+  })
 
 
 export default clientRoute;

@@ -11,6 +11,10 @@ export interface clients {
     T2: string,
     T3: string,
     T4: string,
+    CT1: string,
+    CT2: string,
+    CT3: string,
+    CT4: string,
 }
 
 export interface addclient {
@@ -25,9 +29,29 @@ export interface addclient {
     T2: string,
     T3: string,
     T4: string,
+    CT1: string,
+    CT2: string,
+    CT3: string,
+    CT4: string,
 }
 
 export interface removeclient {
     user_id : string,
     client_name: string
+}
+
+export interface eatingtime {
+    user_id : string,
+    client_name: string,
+    timeeating: string,
+    times: string,
+    T1: string,
+    T2: string,
+    T3: string,
+    T4: string,
+    CT1: string,
+    CT2: string,
+    CT3: string,
+    CT4: string,
+
 }
