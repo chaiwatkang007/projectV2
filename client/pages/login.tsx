@@ -106,7 +106,11 @@ export default function Login() {
     } catch (errorMessage: any) {
       if (axios.isAxiosError(errorMessage)) {
         if (errorMessage.response) {
-          setErrorMessage("Invalid username or password");
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Invalid username or password",
+          });
         }
       }
       console.log("err=========>", errorMessage);

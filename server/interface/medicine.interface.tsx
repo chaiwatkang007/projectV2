@@ -14,3 +14,11 @@ export interface Addmedicine {
     md_output: number
     md_total: number
 }
+
+export interface Balance {
+    md_name: string
+    md_set: string
+    md_input: number
+    md_output: number
+    md_total: number
+}

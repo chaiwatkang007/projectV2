@@ -2,7 +2,18 @@ import React, { useState, useEffect, use } from "react";
 import Highcharts, { setOptions } from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import axios from "axios";
-import { Button, Card, Col, Checkbox, Row, Statistic, Alert } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Checkbox,
+  Row,
+  Statistic,
+  Alert,
+  Table,
+  TableProps,
+  Pagination,
+} from "antd";
 import {
   AppstoreFilled,
   ControlFilled,
@@ -33,10 +44,10 @@ interface Clientaa {
   congenital_disease: string;
   medicine_name: string;
   times: string;
-  T1: string;
-  T2: string;
-  T3: string;
-  T4: string;
+  CT1: string;
+  CT2: string;
+  CT3: string;
+  CT4: string;
 }
 interface ChartDataState {
   labels: any;
@@ -61,9 +72,7 @@ function Admin() {
   const [selectedMenu, setSelectedMenu] = useState("DASHBOARD");
   const [datalog, setDatalog] = useState([]);
   const [DataClient, setClient] = useState([]);
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [currentPage, setCurrentPage] = useState(1); // หน้าปัจจุบัน
-  const [itemsPerPage] = useState(10); // จำนวนรายการต่อหน้า
+ 
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [chartData, setChartData] = useState<{
     labels: {
@@ -89,14 +98,27 @@ function Admin() {
   const [selectedCount, setSelectedCount] = useState(0);
   const [selectedOption, setSelectedOption] = useState(0);
   // Medicine
+  const [dataMedicA, setDatamedicA] = useState(0);
+  const [dataMedicB, setDatamedicB] = useState(0);
+  const [dataMedicAoutput, setDatamedicAoutput] = useState(0);
+  const [dataMedicBoutput, setDatamedicBoutput] = useState(0);
   const [MedicineName, setMedicineName] = useState<string>("");
   const [numberMedicine, setNumberMedicine] = useState<number>();
   const [isMedicineFormVisible, setMedicineFormVisible] = useState(false);
   const [isClientFormVisible, setClientFormVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  const [currentPage, setCurrentPage] = useState(1); // หน้าปัจจุบัน
+  const [itemsPerPage] = useState(10); // จำนวนรายการต่อหน้า
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = datalog.slice(indexOfFirstItem, indexOfLastItem);
+
+  const [currentPageClient, setCurrentPageClient] = useState(1); // หน้าปัจจุบัน
+  const [itemsPerPageClient] = useState(8); // จำนวนรายการต่อหน้า
+  const indexOfLastItemClient = currentPageClient * itemsPerPageClient;
+  const indexOfFirstItemClient = indexOfLastItemClient - itemsPerPageClient;
+  const currentItemsClient = DataClient.slice(indexOfFirstItemClient, indexOfLastItemClient);
 
   const pageNumbers: number[] = [];
   for (let i = 1; i <= Math.ceil(datalog.length / itemsPerPage); i++) {
@@ -107,6 +129,21 @@ function Admin() {
     return (
       <li key={number}>
         <a href="#" onClick={() => setCurrentPage(number)}>
+          {number}
+        </a>
+      </li>
+    );
+  });
+
+  const pageNumbersClient: number[] = [];
+  for (let i = 1; i <= Math.ceil(DataClient.length / itemsPerPageClient); i++) {
+    pageNumbersClient.push(i);
+  }
+
+  const renderPageNumbersClient = pageNumbersClient.map((number) => {
+    return (
+      <li key={number}>
+        <a href="#" onClick={() => setCurrentPageClient(number)}>
           {number}
         </a>
       </li>
@@ -148,18 +185,23 @@ function Admin() {
     };
     fetchLog();
 
-    const fetchpix = async () => {
+    const fetchMedicine = async () => {
       try {
-        const randomText = Math.random().toString(36).substring(7);
-        const response = await fetch(`https://robohash.org/${randomText}.png`);
-        if (response.ok) {
-          setAvatarUrl(response.url);
-        }
+        const response = await axios.get("/api/medicine");
+        const data = response.data.result.rows;
+
+        const datamedicA = data.filter((entry) => entry.md_set === "ช่อง A");
+        const datamedicB = data.filter((entry) => entry.md_set === "ช่อง B");
+
+        setDatamedicA(datamedicA[0].md_total);
+        setDatamedicB(datamedicB[0].md_total);
+        setDatamedicAoutput(datamedicA[0].md_output);
+        setDatamedicBoutput(datamedicB[0].md_output);
       } catch (error) {
-        console.error("Error fetching avatar:", error);
+        console.error("Error fetching data:", error);
       }
     };
-    fetchpix();
+    fetchMedicine();
 
     const fetchData = async () => {
       try {
@@ -222,10 +264,10 @@ function Admin() {
                   congenital_disease: entry.congenital_disease,
                   medicine_name: entry.medicine_name,
                   times: entry.times,
-                  T1: entry.T1,
-                  T2: entry.T2,
-                  T3: entry.T3,
-                  T4: entry.T4,
+                  CT1: entry.CT1,
+                  CT2: entry.CT2,
+                  CT3: entry.CT3,
+                  CT4: entry.CT4,
                 };
               }
             });
@@ -234,28 +276,21 @@ function Admin() {
 
           if (usernamerole === "user") {
             const userClientData = dataclient.result.rows
-              .filter((entry) => entry.user_id === uuiduser)
+              .filter((entry) => entry.user_id === usernamelogin) // ตรวจสอบว่า user_id เท่ากับตัวเอง
               .map((entry) => {
-                const matchingUsers = datauser.result.rows.find(
-                  (user) =>
-                    user.id === entry.user_id || entry.user_id === user.username
-                );
-
-                if (matchingUsers && matchingUsers.id === entry.user_id) {
-                  return {
-                    client_name: entry.client_name,
-                    user_id: matchingUsers.username,
-                    age: entry.age,
-                    gender: entry.gender,
-                    congenital_disease: entry.congenital_disease,
-                    medicine_name: entry.medicine_name,
-                    times: entry.times,
-                    T1: entry.T1,
-                    T2: entry.T2,
-                    T3: entry.T3,
-                    T4: entry.T4,
-                  };
-                }
+                return {
+                  client_name: entry.client_name,
+                  user_id: entry.user_id,
+                  age: entry.age,
+                  gender: entry.gender,
+                  congenital_disease: entry.congenital_disease,
+                  medicine_name: entry.medicine_name,
+                  times: entry.times,
+                  T1: entry.CT1,
+                  T2: entry.CT2,
+                  T3: entry.CT3,
+                  T4: entry.CT4,
+                };
               });
             setClient(userClientData);
           }
@@ -536,82 +571,112 @@ function Admin() {
           <div className="thirdbg">
             <div className="upper-half">
               <div className="medicine1">
-                <div className=" aac">
-                  <Statistic title="Active Users" value={"API คงเหลือ"} />
+                <div className="aac">
+                  <Statistic title="ยาคงเหลือ ช่อง A" value={dataMedicA} />
+                </div>
+
+                <div className="aac1">
+                  <Statistic title="ยาคงเหลือ ช่อง B" value={dataMedicB} />
                 </div>
               </div>
               <div className="medicine2">
-                <div>
-                  <Alert
-                    message={
-                      <Marquee pauseOnHover gradient={false}>
-                        Wellcome to senior project computer and robotic of
-                        fourth year engineering from Bangkok university.
-                      </Marquee>
-                    }
+                <div className="aac2">
+                  <Statistic
+                    title="จ่ายยาไปแล้ว ช่อง A"
+                    value={dataMedicAoutput}
+                  />
+                </div>
+
+                <div className="aac21">
+                  <Statistic
+                    title="จ่ายยาไปแล้ว ช่อง B"
+                    value={dataMedicBoutput}
                   />
                 </div>
               </div>
               <div className="tableclient">
                 {usernamerole === "admin" && (
-                  <table className="clienttable">
-                    <thead>
-                      <tr>
-                        <th>ผู้ดูแล</th>
-                        <th>ผุ้ไข้</th>
-                        <th>อายุ</th>
-                        <th>เพศ</th>
-                        <th>โรคประจำตัว</th>
-                        <th>ชื่อยา</th>
-                        <th>กิน/เวลา</th>
-                        <th>ครั้งที่แรก</th>
-                        <th>ครั้งที่สอง</th>
-                        <th>ครั้งที่สาม</th>
-                        <th>ครั้งที่สี่</th>
-                      </tr>
-                    </thead>
-                    <tfoot>
-                      <tr></tr>
-                    </tfoot>
-                    <tbody>
-                      {DataClient.map((entry: Clientaa, index1) => (
-                        <tr key={index1}>
-                          <td>{entry?.user_id}</td>
-                          <td>{entry?.client_name}</td>
-                          <td>{entry?.age}</td>
-                          <td>{entry?.gender}</td>
-                          <td>{entry?.congenital_disease}</td>
-                          <td>{entry?.medicine_name}</td>
-                          <td>{entry?.times}</td>
-                          <td>{entry?.T1}</td>
-                          <td>{entry?.T2}</td>
-                          <td>{entry?.T3}</td>
-                          <td>{entry?.T4}</td>
+                  <div className="ccc">
+                    <table className="clienttable">
+                      <thead>
+                        <tr>
+                          <th>ผู้ดูแล</th>
+                          <th>ผุ้ไข้</th>
+                          <th>อายุ</th>
+                          <th>เพศ</th>
+                          <th>โรคประจำตัว</th>
+                          <th>ชื่อยา</th>
+                          <th>กิน/เวลา</th>
+                          <th>ครั้งที่แรก</th>
+                          <th>ครั้งที่สอง</th>
+                          <th>ครั้งที่สาม</th>
+                          <th>ครั้งที่สี่</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {currentItemsClient.map((entry: Clientaa, index1) => (
+                          <tr key={index1}>
+                            <td>{entry?.user_id}</td>
+                            <td>{entry?.client_name}</td>
+                            <td>{entry?.age}</td>
+                            <td>{entry?.gender}</td>
+                            <td>{entry?.congenital_disease}</td>
+                            <td>{entry?.medicine_name}</td>
+                            <td>{entry?.times}</td>
+                            <td>{entry?.CT1}</td>
+                            <td>{entry?.CT2}</td>
+                            <td>{entry?.CT3}</td>
+                            <td>{entry?.CT4}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <div className="pagination1">
+                      <ul className="page-numbers">{renderPageNumbersClient}</ul>
+                    </div>
+                  </div>
                 )}
+
                 {usernamerole === "user" && (
-                  <table className="clienttable">
-                    <thead>
-                      <tr>
-                        <th>CARAKER</th>
-                        <th>CASE</th>
-                      </tr>
-                    </thead>
-                    <tfoot>
-                      <tr></tr>
-                    </tfoot>
-                    <tbody>
-                      {DataClient.map((entry: Clientaa, index1) => (
-                        <tr key={index1}>
-                          <td>{entry?.user_id}</td>
-                          <td>{entry?.client_name}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                 <div className="ccc">
+                 <table className="clienttable">
+                   <thead>
+                     <tr>
+                       <th>ผู้ดูแล</th>
+                       <th>ผุ้ไข้</th>
+                       <th>อายุ</th>
+                       <th>เพศ</th>
+                       <th>โรคประจำตัว</th>
+                       <th>ชื่อยา</th>
+                       <th>กิน/เวลา</th>
+                       <th>ครั้งที่แรก</th>
+                       <th>ครั้งที่สอง</th>
+                       <th>ครั้งที่สาม</th>
+                       <th>ครั้งที่สี่</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     {currentItemsClient.map((entry: Clientaa, index1) => (
+                       <tr key={index1}>
+                         <td>{entry?.user_id}</td>
+                         <td>{entry?.client_name}</td>
+                         <td>{entry?.age}</td>
+                         <td>{entry?.gender}</td>
+                         <td>{entry?.congenital_disease}</td>
+                         <td>{entry?.medicine_name}</td>
+                         <td>{entry?.times}</td>
+                         <td>{entry?.CT1}</td>
+                         <td>{entry?.CT2}</td>
+                         <td>{entry?.CT3}</td>
+                         <td>{entry?.CT4}</td>
+                       </tr>
+                     ))}
+                   </tbody>
+                 </table>
+                 <div className="pagination1">
+                   <ul className="page-numbers">{renderPageNumbersClient}</ul>
+                 </div>
+               </div>
                 )}
               </div>
             </div>
