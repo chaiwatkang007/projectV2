@@ -448,21 +448,6 @@ body {
   }
 }
 
-/* @media screen and (max-width: 1860px ) {
-  .Card1{
-    justify-content: center;
-    margin: auto;
-    margin-top: 20%;
-  }
-}
-@media screen and (max-width: 1133px) {
-  .Card1{
-    justify-content: center;
-    margin: auto;
-    margin-top: 20%;
-  }
-} */
-
 table.clienttable {
   border: 5px solid #1C6EA4;
   background-color: #EEEEEE;
