@@ -448,6 +448,21 @@ body {
   }
 }
 
+/* @media screen and (max-width: 1860px ) {
+  .Card1{
+    justify-content: center;
+    margin: auto;
+    margin-top: 20%;
+  }
+}
+@media screen and (max-width: 1133px) {
+  .Card1{
+    justify-content: center;
+    margin: auto;
+    margin-top: 20%;
+  }
+} */
+
 table.clienttable {
   border: 5px solid #1C6EA4;
   background-color: #EEEEEE;
@@ -487,34 +502,74 @@ table.clienttable thead th {
 }
 
 .medicine1{
-  margin-left: 2%;
+  margin-left: 2.5%;
 }
 
 .aac{
-  display: flex;
-  justify-content: center;
+  margin: 40px;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.88);
+  padding-left: 20px;
+  padding-top: 10px;
+  background-color: rgb(255, 255, 255);
+  border: 0px solid rgba(0, 0, 0, 0.125);
+  border-radius: 1rem;
+  width: 80%;
+}
+
+.aac1 {
+  margin: 40px;
+  margin-top: 100px;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.88);
+  padding-left: 20px;
+  padding-top: 10px;
+  background-color: rgb(255, 255, 255);
+  border: 0px solid rgba(0, 0, 0, 0.125);
+  border-radius: 1rem;
+  width: 80%;
+}
+
+
+.aac2{
+  margin: 40px;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.88);
+  padding-left: 20px;
+  padding-top: 10px;
+  background-color: rgb(255, 255, 255);
+  border: 0px solid rgba(0, 0, 0, 0.125);
+  border-radius: 1rem;
+  width: 80%;
+}
+.aac21{
+  margin: 40px;
+  margin-top: 100px;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.88);
+  padding-left: 20px;
+  padding-top: 10px;
+  background-color: rgb(255, 255, 255);
+  border: 0px solid rgba(0, 0, 0, 0.125);
+  border-radius: 1rem;
+  width: 80%;
 }
 
 .upper-half{
   height: 330px;
 }
 
-.medicine2{
-  background-color: #e40707ad;
-}
 
 .medicine1,
 .medicine2,
 .tableclient {
   flex: 1;
 }
-
-.tableclient {
-  margin-left: auto;
-  margin-top: 0;
-  margin-bottom: auto;
+.pagination1{
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
 }
-
 .chart {
   background-color: #d40e0e;
   flex: 1;
