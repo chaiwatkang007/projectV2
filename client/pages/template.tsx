@@ -1,5 +1,5 @@
 import React, { useState, useEffect, use } from "react";
-import Highcharts, { setOptions } from "highcharts";
+import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import axios from "axios";
 import {
