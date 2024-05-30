@@ -75,34 +75,22 @@ const clientController = {
       throw new Error("ไม่พบชื่อผู้ป่วยในระบบ");
     }
 
-    if (args.timeeating === user.T1) {
+    if (args.timeeating >= user.T1 && args.timeeating < user.T2) {
       user.update({ T1: null });
     }
-    // if (args.timeeating !== user.T1 || args.timeeating < user.T2) {
-    //   await user.update({ T1: null });
-    // }
-
-    if (args.timeeating === user.T2) {
+   
+    if (args.timeeating >= user.T2 && args.timeeating < user.T3) {
       user.update({ T2: null });
     }
-    // if (args.timeeating !== user.T2 || args.timeeating < user.T3) {
-    //   await user.update({ T2: null });
-    // }
-
-    if (args.timeeating === user.T3) {
+   
+    if (args.timeeating >= user.T3 && args.timeeating < user.T4) {
       user.update({ T3: null });
     }
-    // if (args.timeeating !== user.T3 || args.timeeating < user.T4) {
-    //   await user.update({ T3: null });
-    // }
-
-    if (args.timeeating === user.T4) {
+   
+    if (args.timeeating >= user.T4 && args.timeeating <= "23:59") {
       user.update({ T4: null });
     }
-    // if (args.timeeating !== user.T4 || args.timeeating > user.T4) {
-    //   await user.update({ T4: null });
-    // }
-
+    
     return user;
   },
   autoreset: async (args: eatingtime) => {
@@ -130,25 +118,6 @@ const clientController = {
       console.error("Error occurred while resetting:", error);
       throw error
     }
-
-    // let Reset = await Clients.update(
-    //   {
-    //       T1: args.CT1,
-    //       T2: args.CT2,
-    //       T3: args.CT3,
-    //       T4: args.CT4,
-    //   },
-    //   {
-    //       where: {
-    //           T1: args.CT1,
-    //           T2: args.CT2,
-    //           T3: args.CT3,
-    //           T4: args.CT4,
-    //       },
-    //   }
-    // );
-
-    // return "Updated";
   },
 };
 

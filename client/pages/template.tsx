@@ -27,6 +27,7 @@ import Marquee from "react-fast-marquee";
 import Link from "next/link";
 import Swal from "sweetalert2";
 
+const moment = require('moment-timezone');
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const { Meta } = Card;
@@ -72,7 +73,7 @@ function Admin() {
   const [selectedMenu, setSelectedMenu] = useState("DASHBOARD");
   const [datalog, setDatalog] = useState([]);
   const [DataClient, setClient] = useState([]);
- 
+
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [chartData, setChartData] = useState<{
     labels: {
@@ -107,7 +108,7 @@ function Admin() {
   const [isMedicineFormVisible, setMedicineFormVisible] = useState(false);
   const [isClientFormVisible, setClientFormVisible] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+
   const [currentPage, setCurrentPage] = useState(1); // หน้าปัจจุบัน
   const [itemsPerPage] = useState(10); // จำนวนรายการต่อหน้า
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -118,7 +119,10 @@ function Admin() {
   const [itemsPerPageClient] = useState(8); // จำนวนรายการต่อหน้า
   const indexOfLastItemClient = currentPageClient * itemsPerPageClient;
   const indexOfFirstItemClient = indexOfLastItemClient - itemsPerPageClient;
-  const currentItemsClient = DataClient.slice(indexOfFirstItemClient, indexOfLastItemClient);
+  const currentItemsClient = DataClient.slice(
+    indexOfFirstItemClient,
+    indexOfLastItemClient
+  );
 
   const pageNumbers: number[] = [];
   for (let i = 1; i <= Math.ceil(datalog.length / itemsPerPage); i++) {
@@ -325,7 +329,7 @@ function Admin() {
     };
 
     const midnightReset = () => {
-      const now = new Date();
+      const now = moment().tz("Asia/Bangkok");
       const currentHour = now.getHours();
       const currentMinite = now.getMinutes();
 
@@ -632,51 +636,55 @@ function Admin() {
                       </tbody>
                     </table>
                     <div className="pagination1">
-                      <ul className="page-numbers">{renderPageNumbersClient}</ul>
+                      <ul className="page-numbers">
+                        {renderPageNumbersClient}
+                      </ul>
                     </div>
                   </div>
                 )}
 
                 {usernamerole === "user" && (
-                 <div className="ccc">
-                 <table className="clienttable">
-                   <thead>
-                     <tr>
-                       <th>ผู้ดูแล</th>
-                       <th>ผุ้ไข้</th>
-                       <th>อายุ</th>
-                       <th>เพศ</th>
-                       <th>โรคประจำตัว</th>
-                       <th>ชื่อยา</th>
-                       <th>กิน/เวลา</th>
-                       <th>ครั้งที่แรก</th>
-                       <th>ครั้งที่สอง</th>
-                       <th>ครั้งที่สาม</th>
-                       <th>ครั้งที่สี่</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     {currentItemsClient.map((entry: Clientaa, index1) => (
-                       <tr key={index1}>
-                         <td>{entry?.user_id}</td>
-                         <td>{entry?.client_name}</td>
-                         <td>{entry?.age}</td>
-                         <td>{entry?.gender}</td>
-                         <td>{entry?.congenital_disease}</td>
-                         <td>{entry?.medicine_name}</td>
-                         <td>{entry?.times}</td>
-                         <td>{entry?.CT1}</td>
-                         <td>{entry?.CT2}</td>
-                         <td>{entry?.CT3}</td>
-                         <td>{entry?.CT4}</td>
-                       </tr>
-                     ))}
-                   </tbody>
-                 </table>
-                 <div className="pagination1">
-                   <ul className="page-numbers">{renderPageNumbersClient}</ul>
-                 </div>
-               </div>
+                  <div className="ccc">
+                    <table className="clienttable">
+                      <thead>
+                        <tr>
+                          <th>ผู้ดูแล</th>
+                          <th>ผุ้ไข้</th>
+                          <th>อายุ</th>
+                          <th>เพศ</th>
+                          <th>โรคประจำตัว</th>
+                          <th>ชื่อยา</th>
+                          <th>กิน/เวลา</th>
+                          <th>ครั้งที่แรก</th>
+                          <th>ครั้งที่สอง</th>
+                          <th>ครั้งที่สาม</th>
+                          <th>ครั้งที่สี่</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentItemsClient.map((entry: Clientaa, index1) => (
+                          <tr key={index1}>
+                            <td>{entry?.user_id}</td>
+                            <td>{entry?.client_name}</td>
+                            <td>{entry?.age}</td>
+                            <td>{entry?.gender}</td>
+                            <td>{entry?.congenital_disease}</td>
+                            <td>{entry?.medicine_name}</td>
+                            <td>{entry?.times}</td>
+                            <td>{entry?.CT1}</td>
+                            <td>{entry?.CT2}</td>
+                            <td>{entry?.CT3}</td>
+                            <td>{entry?.CT4}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <div className="pagination1">
+                      <ul className="page-numbers">
+                        {renderPageNumbersClient}
+                      </ul>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
