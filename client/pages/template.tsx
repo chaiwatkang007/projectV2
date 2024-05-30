@@ -27,7 +27,6 @@ import Marquee from "react-fast-marquee";
 import Link from "next/link";
 import Swal from "sweetalert2";
 
-const moment = require('moment-timezone');
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const { Meta } = Card;
@@ -329,14 +328,15 @@ function Admin() {
     };
 
     const midnightReset = () => {
-      const now = moment().tz("Asia/Bangkok");
+      const now = new Date();
       const currentHour = now.getHours();
-      const currentMinite = now.getMinutes();
-
-      if (currentHour === 0 && currentMinite === 0) {
+      const currentMinute = now.getMinutes();
+      console.log(currentHour, currentMinute);
+    
+      if (currentHour === 0 && currentMinute === 0) {
         Reset();
       }
-    };
+    };    
     setInterval(midnightReset, 60000);
   }, [usernamerole, usernamelogin, uuiduser]);
 
