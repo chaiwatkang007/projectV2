@@ -86,7 +86,7 @@ export default function Register() {
         });
         Toast.fire({
           icon: "success",
-          title: "Signed in successfully"
+          title: "Signed Up successfully"
         });
         setTimeout(() => {
           Router.push(`/login`);

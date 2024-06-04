@@ -279,7 +279,7 @@ function Admin() {
 
           if (usernamerole === "user") {
             const userClientData = dataclient.result.rows
-              .filter((entry) => entry.user_id === usernamelogin) // ตรวจสอบว่า user_id เท่ากับตัวเอง
+              .filter((entry) => entry.user_id === usernamelogin) 
               .map((entry) => {
                 return {
                   client_name: entry.client_name,
@@ -289,12 +289,14 @@ function Admin() {
                   congenital_disease: entry.congenital_disease,
                   medicine_name: entry.medicine_name,
                   times: entry.times,
-                  T1: entry.CT1,
-                  T2: entry.CT2,
-                  T3: entry.CT3,
-                  T4: entry.CT4,
+                  CT1: entry.CT1,
+                  CT2: entry.CT2,
+                  CT3: entry.CT3,
+                  CT4: entry.CT4,
                 };
               });
+              console.log(userClientData);
+              
             setClient(userClientData);
           }
         }
@@ -343,7 +345,6 @@ function Admin() {
   const selectMenu = (menu) => {
     setSelectedMenu(menu);
   };
-
   const Darkmode = () => {
     setIsDarkMode(!isDarkMode);
   };

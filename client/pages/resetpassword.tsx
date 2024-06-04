@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Alert, Button } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
-
-
+import Swal from "sweetalert2";
 
 export default function Resetpassowrd() {
   const router = useRouter();
@@ -13,62 +12,69 @@ export default function Resetpassowrd() {
   const [password, setPassword] = useState<string>("");
 
   const passwordStrong = (password) => {
-    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const strongRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return strongRegex.test(password);
-  }
+  };
 
   const _handleReset = async () => {
-  try {
-    if (!newpassword || !password ) {
-      setErrorMessage("Please enter a  username and password");
-      return;
-    }
+    try {
+      if (!newpassword || !password) {
+        setErrorMessage("Please enter a  username and password");
+        return;
+      }
 
-    if(newpassword !== password) {
-      setErrorMessage("New password and confirm password don't match");
-      return;
-    }
+      if (newpassword !== password) {
+        setErrorMessage("New password and confirm password don't match");
+        return;
+      }
 
-    if (!passwordStrong(password)) {
-      setErrorMessage("Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long.")
-      return;
-    }
+      if (!passwordStrong(password)) {
+        setErrorMessage(
+          "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long."
+        );
+        return;
+      }
 
-    const result = await axios({
-      method: "post",
-      maxBodyLength: Infinity,
-      url: "/api/user/update",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify({
-        "email": email,
-        "password": newpassword,
-      }),
-    });
-    if (result?.data) {
-      console.log("Reset password successful!");
-      setErrorMessage("Reset password successful!");
-      await axios.post('/api/log/addlog', {
-        event_happening: `${email} Reset password`,
+      const result = await axios({
+        method: "post",
+        maxBodyLength: Infinity,
+        url: "/api/user/update",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify({
+          email: email,
+          password: newpassword,
+        }),
       });
-      router.push("/login");
-    }
-  } catch (errorMessage: any) {
-    if (axios.isAxiosError(errorMessage)) {
-      if (errorMessage.response) {
-        setErrorMessage("ไม่สามารถเปลี่ยนรหัสได้หรือรหัสผ่านซ้ำกับอันเดิม");
+      if (result?.data) {
+        console.log("Reset password successful!");
+        Swal.fire({
+          icon: "success",
+          title: "success",
+          text: "Reset password successful!",
+        });
+        await axios.post("/api/log/addlog", {
+          event_happening: `${email} Reset password`,
+        });
+        router.push("/login");
+      }
+    } catch (errorMessage: any) {
+      if (axios.isAxiosError(errorMessage)) {
+        if (errorMessage.response) {
+          setErrorMessage("ไม่สามารถเปลี่ยนรหัสได้หรือรหัสผ่านซ้ำกับอันเดิม");
+        }
       }
     }
-  }
-};
+  };
   return (
     <main className="bg">
       <title>Sign in to SeniorProject</title>
       <div className="beforelogin">
         <form>
           <div className="container">
-          <label className="signin" htmlFor="signin">
+            <label className="signin" htmlFor="signin">
               <b>
                 <h1>Reset Password</h1>
               </b>
@@ -94,7 +100,6 @@ export default function Resetpassowrd() {
               required
               value={newpassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              
             />
             <label htmlFor="psw">
               <b>Password</b>
@@ -107,8 +112,7 @@ export default function Resetpassowrd() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <div className="cc">
-            </div>
+            <div className="cc"></div>
             <Button
               className="buttonlogin"
               type="primary"
@@ -118,13 +122,12 @@ export default function Resetpassowrd() {
             </Button>
           </div>
           <div className="err">
-          {errorMessage && (
-            <Alert message={errorMessage} type="error" showIcon />
-          )}
+            {errorMessage && (
+              <Alert message={errorMessage} type="error" showIcon />
+            )}
           </div>
         </form>
       </div>
     </main>
   );
-};
-
+}

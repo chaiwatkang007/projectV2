@@ -22,6 +22,21 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/forgotpassword": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/forgotpassword.js"
+    ],
+    "/login": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/login.js"
+    ],
+    "/resetpassword": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/resetpassword.js"
+    ],
     "/template": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",

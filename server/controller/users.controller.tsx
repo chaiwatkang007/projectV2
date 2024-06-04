@@ -72,10 +72,7 @@ const usersController = {
     return "ลบผู้ใช้งานสำเร็จ";
   },
   sendmail: async (args: Sendmail) => {
-    // let user = await Users.findOne({ where: { email: args?.email } });
-    // if (!user) throw Error("ไม่พบ Email ผู้ใช้งานนี้อยู่ในระบบ");
-    // return "Email นี้อยู่ในระบบ";
-
+  
     let user = await Users.findOne({ where: { email: args?.email } });
     if (!user) {
       throw new Error("ไม่พบ Email ผู้ใช้งานนี้อยู่ในระบบ");
@@ -111,6 +108,7 @@ const usersController = {
       throw new Error("เกิดข้อผิดพลาดในการส่งอีเมล");
     }
   },
+
   adminlog: async (args: Adminlog) => {
     let user = await Users.findOne({ where: { username: args.username } });
     if (!user) throw Error("ไม่พบผู้ใช้งานนี้มีอยู่ในระบบ");
@@ -123,13 +121,6 @@ const usersController = {
       throw new Error("รหัสผ่านไม่ถูกต้อง");
     }
 
-    // if(users?.password === password) {
-    //   return done(undefined, { users }, null)
-    // } else {
-    //     return done(undefined, false, {
-    //         message: "รหัสผ่านไม่ถูกต้อง"
-    //     })
-    // }
   },
 };
 
